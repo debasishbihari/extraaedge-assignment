@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchUsers } from "./redux/userSlice";
+import UserCard from "./components/UserCard";
+import LoadingSpinner from "./components/LoadingSpinner";
+import { Row, Col } from "antd";
+import "./styles/App.css";
 
-function App() {
+const App = () => {
+  const dispatch = useDispatch();
+  const { data: users, status } = useSelector((state) => state.users);
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
+  if (status === "loading") return <LoadingSpinner />;
+  if (status === "failed") return <p>Error loading users.</p>;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app-container">
+      <Row gutter={[16, 16]}>
+        {users.map((user) => (
+          <Col xs={24} sm={12} md={8} lg={6} key={user.id}>
+            <UserCard user={user} />
+          </Col>
+        ))}
+      </Row>
     </div>
   );
-}
+};
 
 export default App;
